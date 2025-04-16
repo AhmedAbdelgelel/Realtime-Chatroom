@@ -1,13 +1,16 @@
-// Helper: Format chat messages with timestamps
 const moment = require("moment");
+const Logger = require("../services/loggerService");
+const logger = new Logger("messages");
 
 // Format: Create message object with username, text and current time
 function formatMessage(username, text) {
-  return {
+  const message = {
     username,
     text,
     time: moment().format("h:mm a"),
   };
+  logger.debug("Message formatted", { username, timestamp: message.time });
+  return message;
 }
 
 module.exports = formatMessage;
