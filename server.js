@@ -29,26 +29,19 @@ const botName = "ChatRoom Bot";
 
 // WebSocket: Handle real-time chat connections
 io.on("connection", (socket) => {
-  logger.debug(`New socket connection established`, { socketId: socket.id });
-
   // Handler: When user joins a chat room
   socket.on("joinRoom", ({ username, room }) => {
     try {
       const user = userJoin(socket.id, username, room);
-      logger.info("User joined chat room", { user, socketId: socket.id });
+      logger.info("User joined chat room", { user });
 
       socket.join(user.room);
-      logger.debug(`Socket joined room`, {
-        room: user.room,
-        socketId: socket.id,
-      });
 
       // Notifications: Welcome new user
       socket.emit(
         "message",
         formatMessage(botName, "Welcome to chat room bro")
       );
-      logger.trace("Welcome message sent to user", { username });
 
       // Notifications: Alert others of new user
       socket.broadcast
@@ -57,20 +50,12 @@ io.on("connection", (socket) => {
           "message",
           formatMessage(botName, `${user.username} has joined the chat room`)
         );
-      logger.debug("Broadcast join notification", {
-        username,
-        room: user.room,
-      });
 
       // Update: Send current room users list
       const roomUsers = getRoomUsers(user.room);
       io.to(user.room).emit("roomUsers", {
         room: user.room,
         users: roomUsers,
-      });
-      logger.debug("Room users list updated", {
-        room: user.room,
-        userCount: roomUsers.length,
       });
     } catch (error) {
       logger.error("Error in joinRoom handler", {
@@ -86,15 +71,7 @@ io.on("connection", (socket) => {
     try {
       const user = getCurrentUser(socket.id);
       if (user) {
-        logger.debug("Processing chat message", {
-          username: user.username,
-          room: user.room,
-        });
         io.to(user.room).emit("message", formatMessage(user.username, msg));
-        logger.trace("Message broadcasted to room", {
-          room: user.room,
-          username: user.username,
-        });
       } else {
         logger.warn("Message received from unknown user", {
           socketId: socket.id,
@@ -119,20 +96,12 @@ io.on("connection", (socket) => {
           "message",
           formatMessage(botName, `${user.username} has left the chat room`)
         );
-        logger.debug("User left notification sent", {
-          username: user.username,
-          room: user.room,
-        });
 
         // Update: Refresh room users list
         const roomUsers = getRoomUsers(user.room);
         io.to(user.room).emit("roomUsers", {
           room: user.room,
           users: roomUsers,
-        });
-        logger.debug("Room users list updated after disconnect", {
-          room: user.room,
-          userCount: roomUsers.length,
         });
       }
     } catch (error) {

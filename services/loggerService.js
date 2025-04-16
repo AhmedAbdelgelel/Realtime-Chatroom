@@ -10,7 +10,7 @@ class LoggerService {
   constructor(route) {
     this.route = route;
     const logger = winston.createLogger({
-      level: process.env.NODE_ENV === "development" ? "debug" : "info",
+      level: process.env.NODE_ENV === "development" ? "info" : "info",
       format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.printf((info) => {
@@ -44,17 +44,13 @@ class LoggerService {
     this.logger.log("error", message, { obj });
   }
 
-  debug(message, obj = null) {
-    this.logger.log("debug", message, { obj });
-  }
-
   warn(message, obj = null) {
     this.logger.log("warn", message, { obj });
   }
 
   trace(message, obj = null) {
     if (process.env.NODE_ENV === "development") {
-      this.logger.log("debug", `TRACE: ${message}`, { obj });
+      this.logger.log("info", `TRACE: ${message}`, { obj });
     }
   }
 
