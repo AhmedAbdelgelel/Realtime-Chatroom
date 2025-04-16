@@ -23,9 +23,7 @@ class LoggerService {
         })
       ),
       transports: [
-        new winston.transports.Console({
-          format: winston.format.colorize({ all: true }),
-        }),
+        // Console transport removed to disable terminal logging
         new winston.transports.File({
           filename: `${process.env.LOG_FILE_PATH}/error_${route}.log`,
           level: "error",
