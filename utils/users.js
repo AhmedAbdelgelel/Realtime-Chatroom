@@ -1,4 +1,4 @@
-const Logger = require("../services/loggerService");
+import Logger from "../services/loggerService.js";
 const logger = new Logger("users");
 
 const users = [];
@@ -28,9 +28,4 @@ function getRoomUsers(room) {
   return users.filter((user) => user.room === room);
 }
 
-module.exports = {
-  userJoin,
-  getCurrentUser,
-  userLeave,
-  getRoomUsers,
-};
+export { userJoin, getCurrentUser, userLeave, getRoomUsers };

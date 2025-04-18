@@ -1,16 +1,21 @@
-const express = require("express");
-const path = require("path");
-const dotenv = require("dotenv");
-const http = require("http");
-const socketIo = require("socket.io");
-const Logger = require("./services/loggerService");
-const formatMessage = require("./utils/messages");
-const {
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+import http from "http";
+import { Server } from "socket.io";
+import Logger from "./services/loggerService.js";
+import formatMessage from "./utils/messages.js";
+import {
   userJoin,
   getCurrentUser,
   getRoomUsers,
   userLeave,
-} = require("./utils/users");
+} from "./utils/users.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 dotenv.config();
 
 const logger = new Logger("socket");
@@ -18,7 +23,7 @@ const logger = new Logger("socket");
 // Init: Create Express app and Socket.io server
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = new Server(server);
 
 logger.info("Server initialized");
 
@@ -27,6 +32,11 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 const botName = "ChatRoom Bot";
 
+app.post("/send", (req, res) => {
+  const message = req.body.message;
+  io.emit("message", formatMessage("user", message));
+  res.status(200).json({ message });
+});
 // WebSocket: Handle real-time chat connections
 io.on("connection", (socket) => {
   // Handler: When user joins a chat room
@@ -140,3 +150,6 @@ process.on("uncaughtException", (err) => {
     process.exit(1);
   });
 });
+
+// Export the server for testing purposes
+export default server;
