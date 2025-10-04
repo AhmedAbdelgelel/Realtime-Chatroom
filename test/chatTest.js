@@ -16,7 +16,8 @@ describe("Chat API", function () {
       .expect(200)
       .end((err, res) => {
         if (err) return done(err);
-        expect(res.body.message).to.equal("hi");
+        expect(res.body.message).to.equal("hello");
+        console.log(JSON.stringify(res.body));
         done();
       });
   });

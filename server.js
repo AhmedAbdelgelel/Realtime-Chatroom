@@ -1,6 +1,5 @@
 import express from "express";
 import path from "path";
-import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import http from "http";
 import { Server } from "socket.io";
@@ -12,9 +11,6 @@ import {
   getRoomUsers,
   userLeave,
 } from "./utils/users.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -35,7 +31,7 @@ const botName = "ChatRoom Bot";
 app.post("/send", (req, res) => {
   const message = req.body.message;
   io.emit("message", formatMessage("user", message));
-  res.status(200).json({ message });
+  res.status(200).json({ message: "hi" });
 });
 // WebSocket: Handle real-time chat connections
 io.on("connection", (socket) => {
